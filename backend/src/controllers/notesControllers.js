@@ -1,9 +1,8 @@
 import Note from "../model/Note.js";
 
-export const getAllNotes = async (req, res) => {
-  // res.status(200).send("You just fetched the notes");
+export const getAllNotes = async (_, res) => {
   try {
-    const notes = await Note.find();
+    const notes = await Note.find().sort({ createdAt: -1 });
     res.status(200).json(notes);
   } catch (error) {
     console.log("Error in getAllNotes controller", error);
@@ -11,8 +10,18 @@ export const getAllNotes = async (req, res) => {
   }
 };
 
+export const getNoteById = async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) return res.status(404).json({ messgae: "Note not found" });
+    res.status(200).json(note);
+  } catch (error) {
+    console.log("Error in getNotebyid controller", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const createNote = async (req, res) => {
-  // res.status(201).json({ message: "Note created successfuly!" });
   try {
     const { title, content } = req.body;
     const note = new Note({ title, content }); //title:title, content:content
@@ -25,7 +34,6 @@ export const createNote = async (req, res) => {
 };
 
 export const updateNote = async (req, res) => {
-  // res.status(200).json({ message: "Note updated successfuly!" });
   try {
     const { title, content } = req.body;
     const updatedNoted = await Note.findByIdAndUpdate(
@@ -43,7 +51,6 @@ export const updateNote = async (req, res) => {
 };
 
 export const deleteNote = async (req, res) => {
-  // res.status(200).json({ message: "Note deleted successfuly!" });
   try {
     const deletedNote = await Note.findByIdAndDelete(req.params.id);
     if (!deletedNote)
@@ -54,8 +61,3 @@ export const deleteNote = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-// const greet = (name, callback) => {
-//   return console.log("HI:", name);
-// };
-// greet("Affan", () => console.log(callback));
